@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyObsidianClipper</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Initial state -->
+  <div id="state-initial" class="state">
+    <div class="header">
+      <div class="logo">📎</div>
+      <h1>MyObsidianClipper</h1>
+      <a id="settings-link" class="settings-link">⚙️ 設定</a>
+    </div>
+
+    <div id="video-info" class="video-info hidden">
+      <div class="video-title-box">
+        <div class="label">📺 検出された動画</div>
+        <div id="video-title" class="video-title">-</div>
+        <div id="video-channel" class="video-channel">-</div>
+      </div>
+
+      <div class="model-select">
+        <div class="label">🤖 Geminiモデル</div>
+        <select id="model-selector">
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+        </select>
+      </div>
+
+      <button id="generate-btn" class="btn btn-primary">
+        ✨ Geminiで要約する
+      </button>
+    </div>
+
+    <div id="not-youtube" class="message error hidden">
+      <p>YouTubeの動画ページで開いてください</p>
+    </div>
+
+    <div id="no-config" class="message error hidden">
+      <p>設定画面でGemini APIキーを登録してください</p>
+      <button id="goto-settings-btn" class="btn btn-small">設定を開く →</button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div id="state-loading" class="state hidden">
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Geminiが要約中...</p>
+      <p class="loading-subtext">字幕を取得してAIが分析しています<br>少々お待ちください</p>
+    </div>
+  </div>
+
+  <!-- Preview state -->
+  <div id="state-preview" class="state hidden">
+    <div class="header">
+      <div class="logo">📎</div>
+      <h1>MyObsidianClipper</h1>
+      <span id="status-badge" class="status-badge">✓ 生成完了</span>
+    </div>
+
+    <div class="filename-box">
+      <span class="icon">📄</span>
+      <input id="filename-input" type="text" class="filename-input" placeholder="filename.md">
+      <span id="edit-filename-btn" class="edit-btn" title="ファイル名を編集">✏️</span>
+    </div>
+
+    <div class="preview-box">
+      <div id="preview-content" class="preview-content">-</div>
+    </div>
+
+    <div class="action-buttons">
+      <button id="save-obsidian-btn" class="btn btn-primary">
+        🔗 Obsidianで開く
+      </button>
+      <button id="download-btn" class="btn btn-secondary">
+        ⬇️ ダウンロード
+      </button>
+    </div>
+
+    <div class="footer-actions">
+      <a id="back-btn" class="link-btn">← 戻って再生成</a>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div id="state-error" class="state hidden">
+    <div class="header">
+      <div class="logo">📎</div>
+      <h1>MyObsidianClipper</h1>
+    </div>
+    <div class="message error">
+      <p id="error-message">エラーが発生しました</p>
+      <button id="retry-btn" class="btn btn-small">再試行</button>
+    </div>
+  </div>
+
+  <script src="../utils/transcript.js"></script>
+  <script src="../utils/gemini.js"></script>
+  <script src="../utils/markdown.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
