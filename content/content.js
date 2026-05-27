@@ -45,9 +45,27 @@ async function extractYouTubeContent() {
   }
 }
 
+console.log('[MyObsidianClipper Content Script] Loaded on:', window.location.href);
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('[MyObsidianClipper Content Script] Received message:', request);
+
   if (request.action === 'extractYouTubeContent') {
-    extractYouTubeContent().then(sendResponse);
+    console.log('[MyObsidianClipper Content Script] Extracting YouTube content...');
+    extractYouTubeContent()
+      .then(result => {
+        console.log('[MyObsidianClipper Content Script] Extraction successful:', result);
+        sendResponse(result);
+      })
+      .catch(error => {
+        console.error('[MyObsidianClipper Content Script] Extraction error:', error);
+        sendResponse({
+          success: false,
+          error: error.message
+        });
+      });
     return true;
   }
 });
+
+console.log('[MyObsidianClipper Content Script] Message listener registered');

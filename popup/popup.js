@@ -108,22 +108,36 @@ async function initialize() {
 }
 
 async function extractAndDisplay() {
-  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  const tabId = tabs[0].id;
-
   try {
-    videoData = await chrome.tabs.sendMessage(tabId, { action: 'extractYouTubeContent' });
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const tabId = tabs[0]?.id;
+    console.log('[MyObsidianClipper] Active tab ID:', tabId);
 
-    if (!videoData.success) {
-      throw new Error(videoData.error || 'Failed to extract video data');
+    if (!tabId) {
+      throw new Error('Could not find active tab');
     }
 
-    videoData = videoData.data;
+    console.log('[MyObsidianClipper] Sending message to content script...');
+    const result = await chrome.tabs.sendMessage(tabId, { action: 'extractYouTubeContent' });
+    console.log('[MyObsidianClipper] Content script response:', result);
+
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to extract video data');
+    }
+
+    videoData = result.data;
+    console.log('[MyObsidianClipper] Video data extracted:', {
+      title: videoData.title,
+      channel: videoData.channel,
+      hasDescription: !!videoData.description,
+      captionTracksCount: videoData.captionTracks?.length || 0
+    });
+
     elements.videoTitle.textContent = videoData.title;
     elements.videoChannel.textContent = videoData.channel;
     elements.videoInfo.classList.remove('hidden');
   } catch (error) {
-    console.error('Extraction error:', error);
+    console.error('[MyObsidianClipper] Extraction error:', error.message, error.stack);
     elements.videoInfo.classList.add('hidden');
     elements.noConfig.classList.remove('hidden');
   }
