@@ -20,10 +20,12 @@
   "options_page": "settings/settings.html",
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/watch*"],
+      "matches": [
+        "https://www.youtube.com/watch*",
+        "https://*.youtube.com/watch*"
+      ],
       "js": ["content/content.js"],
-      "run_at": "document_end",
-      "all_frames": false
+      "run_at": "document_end"
     }
   ],
   "background": {
