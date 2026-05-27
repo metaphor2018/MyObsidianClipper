@@ -67,7 +67,43 @@ function showStatus(message, type) {
   }
 }
 
+async function testApiKey() {
+  const apiKey = document.getElementById('gemini-api-key').value.trim();
+
+  if (!apiKey) {
+    showStatus('APIキーを入力してください', 'error');
+    return;
+  }
+
+  const testBtn = document.getElementById('test-api-key-btn');
+  testBtn.disabled = true;
+  testBtn.textContent = 'テスト中...';
+
+  try {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + apiKey);
+    const data = await response.json();
+
+    if (response.ok) {
+      showStatus('✓ APIキーは有効です', 'success');
+      testBtn.textContent = 'テスト';
+    } else if (data.error?.code === 401) {
+      showStatus('✗ APIキーが無効です（認証エラー）', 'error');
+      testBtn.textContent = 'テスト';
+    } else if (data.error?.code === 403) {
+      showStatus('✗ APIキーが無効です（権限なし）', 'error');
+      testBtn.textContent = 'テスト';
+    } else {
+      showStatus('✗ APIキーの検証に失敗しました', 'error');
+      testBtn.textContent = 'テスト';
+    }
+  } catch (error) {
+    showStatus('✗ ネットワークエラーが発生しました', 'error');
+    testBtn.textContent = 'テスト';
+  }
+}
+
 document.getElementById('save-btn').addEventListener('click', saveSettings);
 document.getElementById('reset-btn').addEventListener('click', resetSettings);
+document.getElementById('test-api-key-btn').addEventListener('click', testApiKey);
 
 loadSettings();

@@ -17,7 +17,10 @@
       <h2>Gemini API</h2>
       <div class="form-group">
         <label for="gemini-api-key">APIキー</label>
-        <input type="password" id="gemini-api-key" placeholder="sk-...">
+        <div class="input-with-button">
+          <input type="password" id="gemini-api-key" placeholder="sk-...">
+          <button id="test-api-key-btn" class="btn btn-small" title="APIキーが有効か確認">テスト</button>
+        </div>
         <p class="help-text">
           <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> から取得したAPIキーを入力してください
         </p>

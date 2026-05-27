@@ -57,6 +57,16 @@ body {
   margin-bottom: 0;
 }
 
+.input-with-button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input-with-button input {
+  flex: 1;
+}
+
 label {
   display: block;
   font-size: 13px;
@@ -139,6 +149,17 @@ select:focus {
 
 .btn-secondary:hover {
   background: #3a3a5e;
+}
+
+.btn-small {
+  padding: 8px 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .status-message {
