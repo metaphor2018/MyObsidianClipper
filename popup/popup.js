@@ -42,31 +42,67 @@ function setState(newState) {
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', initialize);
+console.log('[MyObsidianClipper] Script loaded, document.readyState:', document.readyState);
+
+function initializeApp() {
+  console.log('[MyObsidianClipper] Initializing app...');
+  initialize();
+}
+
+// Handle both ready and already-loaded cases
+if (document.readyState === 'loading') {
+  console.log('[MyObsidianClipper] DOM still loading, waiting for DOMContentLoaded...');
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  console.log('[MyObsidianClipper] DOM already loaded, initializing immediately...');
+  // Use setTimeout to ensure all scripts are loaded
+  setTimeout(initializeApp, 0);
+}
 
 async function initialize() {
-  // Load settings
-  const settings = await chrome.storage.sync.get(['geminiApiKey', 'geminiModel']);
-  apiKey = settings.geminiApiKey;
-  selectedModel = settings.geminiModel || 'gemini-2.0-flash';
-  elements.modelSelector.value = selectedModel;
+  try {
+    // Load settings
+    console.log('[MyObsidianClipper] Loading settings from storage...');
+    const settingsResult = await chrome.storage.sync.get(['geminiApiKey', 'geminiModel']);
+    console.log('[MyObsidianClipper] Storage result:', settingsResult);
+    console.log('[MyObsidianClipper] Keys in result:', Object.keys(settingsResult));
+
+    apiKey = settingsResult.geminiApiKey;
+    selectedModel = settingsResult.geminiModel || 'gemini-2.0-flash';
+
+    console.log('[MyObsidianClipper] Loaded:', {
+      hasApiKey: !!apiKey,
+      apiKeyLength: apiKey?.length || 0,
+      apiKeyStartsWith: apiKey?.substring(0, 10) || 'N/A',
+      selectedModel
+    });
+
+    elements.modelSelector.value = selectedModel;
+  } catch (error) {
+    console.error('[MyObsidianClipper] Error loading settings:', error);
+  }
 
   // Check if on YouTube
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   const isYouTube = tabs[0]?.url?.includes('youtube.com/watch');
+  console.log('[MyObsidianClipper] Current tab URL:', tabs[0]?.url);
+  console.log('[MyObsidianClipper] Is YouTube:', isYouTube);
 
   if (!isYouTube) {
+    console.log('[MyObsidianClipper] Not on YouTube, showing error');
     elements.videoInfo.classList.add('hidden');
     elements.notYoutube.classList.remove('hidden');
     return;
   }
 
-  if (!apiKey) {
+  if (!apiKey || apiKey.trim() === '') {
+    console.error('[MyObsidianClipper] API key is missing or empty. apiKey type:', typeof apiKey, 'value:', apiKey);
     elements.videoInfo.classList.add('hidden');
     elements.noConfig.classList.remove('hidden');
     return;
   }
 
+  console.log('[MyObsidianClipper] Initialization complete, extracting YouTube content...');
   // Extract YouTube content
   await extractAndDisplay();
 }
